@@ -9,6 +9,7 @@ import UIKit
 
 enum CalculationError: Error {
     case dividedByZero
+    case overflow
 }
 
 enum Operation: String {
@@ -46,15 +47,20 @@ class ViewController: UIViewController {
     @IBAction func buttonPressed(_ sender: UIButton) {
         guard let buttonText = sender.currentTitle else { return }
         
+        if label.text == "Ошибка" {
+            label.text = buttonText == "," ? "0," : ""
+          }
+        
         if buttonText == "," && label.text?.contains(",") == true {
             return
         }
         
         if label.text == "0" {
-            label.text = buttonText
+          label.text = buttonText == "," ? "0," : buttonText
         } else {
-            label.text?.append(buttonText)
+          label.text?.append(buttonText)
         }
+        
     }
     
     @IBAction func operationButtonPressed(_ sender: UIButton) {
@@ -94,6 +100,10 @@ class ViewController: UIViewController {
             let result = try calculate()
             
             label.text = numberFormatter.string(from: NSNumber(value: result))
+        } catch CalculationError.dividedByZero {
+            label.text = "Ошибка"
+        } catch CalculationError.overflow {
+            label.text = "Переполнение"
         } catch {
             label.text = "Ошибка"
         }
@@ -119,6 +129,12 @@ class ViewController: UIViewController {
         resetLabelText()
     }
     
+    func checkForOverflow(_ result: Double) throws {
+      if result.isInfinite || result.isNaN {
+        throw CalculationError.overflow
+      }
+    }
+    
     func calculate() throws -> Double {
         guard case .number(let firstNumber) = calculationHistory[0] else { return 0 }
         
@@ -131,6 +147,7 @@ class ViewController: UIViewController {
             else { break }
             
             currentResult = try operation.calculate(currentResult, number)
+            try checkForOverflow(currentResult)
         }
         
         return currentResult
