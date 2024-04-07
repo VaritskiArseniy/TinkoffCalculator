@@ -40,6 +40,21 @@ enum CalculatorHistoryItem {
 }
 
 class ViewController: UIViewController {
+    
+    var noResults = true
+    
+    var calculationHistory: [CalculatorHistoryItem] = []
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        resetLabelText()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     @IBAction func buttonPressed(_ sender: UIButton) {
         guard let buttonText = sender.titleLabel?.text else { return }
         
@@ -59,7 +74,7 @@ class ViewController: UIViewController {
     @IBAction func operationButtonPressed(_ sender: UIButton) {
         if label.text == "Ошибка" {resetLabelText()}
         
-        guard let buttonText = sender.titleLabel?.text ,
+        guard let buttonText = sender.titleLabel?.text,
               let buttonOperation = Operation(rawValue: buttonText)
         else { return }
         
@@ -74,9 +89,7 @@ class ViewController: UIViewController {
         
         print(buttonText)
     }
-    
-    var calculationHistory: [CalculatorHistoryItem] = []
-    
+        
     lazy var numberFormatter: NumberFormatter = {
         let numberFormatter = NumberFormatter()
         numberFormatter.usesGroupingSeparator = false
@@ -88,7 +101,7 @@ class ViewController: UIViewController {
     @IBAction func clearButtonPressed() {
         calculationHistory.removeAll()
         resetLabelText()
-        
+        noResults = true
     }
     
     func resetLabelText() {
@@ -109,21 +122,27 @@ class ViewController: UIViewController {
         catch {
             label.text = "Ошибка"
         }
-        
-        
-        
         calculationHistory.removeAll()
     }
     
     @IBOutlet weak var label: UILabel!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        resetLabelText()
+    @IBAction func showCalculationsList(_ sender: Any) {
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let calculationsListVC = sb.instantiateViewController(identifier: "CalculationsListViewController")
+        if let vc = calculationsListVC as? CalculationsListViewController {
+            if noResults {
+                vc.result = "NoData"
+            } else {
+                vc.result = label.text
+            }
+        }
+        navigationController?.pushViewController(calculationsListVC, animated: true)
     }
     
+    
     func calculate() throws -> Double {
-        guard case .number(let firstNumber) = calculationHistory[0] else{return 0}
+        guard case .number(let firstNumber) = calculationHistory[0] else {return 0}
         
         var currentResult = firstNumber
         for index in stride(from: 1, to: calculationHistory.count - 1, by: 2) {
@@ -132,7 +151,7 @@ class ViewController: UIViewController {
             else {break}
             
             currentResult = try operation.calculate(currentResult, number)
-            
+            noResults = false
         }
         
         return currentResult
