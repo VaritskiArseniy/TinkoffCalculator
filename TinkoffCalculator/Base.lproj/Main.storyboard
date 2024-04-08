@@ -307,6 +307,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Калькулятор" id="sxW-M5-RGD"/>
                     <connections>
+                        <outlet property="historyButton" destination="oSL-OL-pQH" id="DWe-Fk-Nxd"/>
                         <outlet property="label" destination="Sbi-Q1-gJP" id="qR3-6i-bnG"/>
                     </connections>
                 </viewController>
@@ -322,34 +323,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WS7-DQ-r1B">
-                                <rect key="frame" x="196.66666666666666" y="438.66666666666669" width="0.0" height="0.0"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Результат:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJ5-id-q7r">
-                                <rect key="frame" x="154.66666666666666" y="363.66666666666669" width="83.666666666666657" height="25"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="iMF-V3-58y"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="bru-jI-Mgs">
+                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="nGI-Lh-kIw"/>
                         <color key="backgroundColor" systemColor="systemGray2Color"/>
                         <constraints>
-                            <constraint firstItem="WS7-DQ-r1B" firstAttribute="centerX" secondItem="j8U-s1-wHP" secondAttribute="centerX" id="EV0-yS-DnH"/>
-                            <constraint firstItem="vJ5-id-q7r" firstAttribute="centerX" secondItem="nGI-Lh-kIw" secondAttribute="centerX" id="fDv-88-goW"/>
-                            <constraint firstItem="vJ5-id-q7r" firstAttribute="bottom" secondItem="WS7-DQ-r1B" secondAttribute="top" constant="-50" id="j4x-6c-w3u"/>
-                            <constraint firstItem="WS7-DQ-r1B" firstAttribute="centerY" secondItem="nGI-Lh-kIw" secondAttribute="centerY" id="wnU-08-zU9"/>
+                            <constraint firstItem="bru-jI-Mgs" firstAttribute="leading" secondItem="nGI-Lh-kIw" secondAttribute="leading" id="J6L-6a-FdJ"/>
+                            <constraint firstItem="nGI-Lh-kIw" firstAttribute="bottom" secondItem="bru-jI-Mgs" secondAttribute="bottom" id="Ump-8d-07F"/>
+                            <constraint firstItem="nGI-Lh-kIw" firstAttribute="trailing" secondItem="bru-jI-Mgs" secondAttribute="trailing" id="WO8-EI-tVL"/>
+                            <constraint firstItem="bru-jI-Mgs" firstAttribute="top" secondItem="nGI-Lh-kIw" secondAttribute="top" id="YeX-pV-mST"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Прошлые вычисления" id="Us3-S2-cCg"/>
                     <connections>
-                        <outlet property="calculationLabel" destination="WS7-DQ-r1B" id="vmx-SW-1Sv"/>
+                        <outlet property="tableView" destination="bru-jI-Mgs" id="3y8-bN-dnJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1bI-Ej-jZU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

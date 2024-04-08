@@ -4,6 +4,7 @@
 //
 //  Created by Арсений Варицкий on 28.03.24.
 //
+
 import UIKit
 
 enum CalculationError: Error {
@@ -40,14 +41,20 @@ enum CalculatorHistoryItem {
 
 class ViewController: UIViewController {
     
+    var shouldClearDisplay = false
+
     var noResults = true
-    var shoudClearDispley = false
-    
+    var calculations: [(expression: [CalculatorHistoryItem], result: Double)] = []
     var calculationHistory: [CalculatorHistoryItem] = []
+    
+    @IBOutlet weak var label: UILabel!
+    
+    @IBOutlet weak var historyButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         resetLabelText()
+        historyButton.accessibilityIdentifier = "historyButton"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,9 +65,9 @@ class ViewController: UIViewController {
     @IBAction func buttonPressed(_ sender: UIButton) {
         guard let buttonText = sender.titleLabel?.text else { return }
         
-        if shoudClearDispley {
+        if shouldClearDisplay {
             resetLabelText()
-            shoudClearDispley = false
+            shouldClearDisplay = false
         }
         
         if label.text == "Ошибка" {resetLabelText()}
@@ -78,20 +85,15 @@ class ViewController: UIViewController {
     @IBAction func operationButtonPressed(_ sender: UIButton) {
         if label.text == "Ошибка" {resetLabelText()}
         
-        guard let buttonText = sender.titleLabel?.text,
-              let buttonOperation = Operation(rawValue: buttonText)
-        else { return }
+        guard let operationValue = sender.currentTitle,
+              let operation = Operation(rawValue: operationValue),
+              let displayText = label.text,
+              let number = numberFormatter.number(from: displayText)?.doubleValue else { return }
         
-        guard
-            let labelText = label.text,
-            let labelNumber = numberFormatter.number(from: labelText)?.doubleValue
-        else {return}
-        
-        calculationHistory.append(.number(labelNumber))
-        calculationHistory.append(.operation(buttonOperation))
+        calculationHistory.append(.number(number))
+        calculationHistory.append(.operation(operation))
         resetLabelText()
-        
-    }
+        }
         
     lazy var numberFormatter: NumberFormatter = {
         let numberFormatter = NumberFormatter()
@@ -104,7 +106,6 @@ class ViewController: UIViewController {
     @IBAction func clearButtonPressed() {
         calculationHistory.removeAll()
         resetLabelText()
-        noResults = true
     }
     
     func resetLabelText() {
@@ -121,42 +122,41 @@ class ViewController: UIViewController {
         
         do {
             let result = try calculate()
-            label.text = numberFormatter.string(from: NSNumber(value: result))}
+            label.text = numberFormatter.string(from: NSNumber(value: result))
+            calculations.append((calculationHistory, result))
+        }
         catch {
             label.text = "Ошибка"
         }
         calculationHistory.removeAll()
     }
     
-    @IBOutlet weak var label: UILabel!
-    
     @IBAction func showCalculationsList(_ sender: Any) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
         let calculationsListVC = sb.instantiateViewController(identifier: "CalculationsListViewController")
         if let vc = calculationsListVC as? CalculationsListViewController {
-            if noResults {
-                vc.result = "NoData"
-            } else {
-                vc.result = label.text
-            }
+                vc.calculations = calculations
         }
         navigationController?.pushViewController(calculationsListVC, animated: true)
     }
     
     
     func calculate() throws -> Double {
-        guard case .number(let firstNumber) = calculationHistory[0] else {return 0}
-        
+        guard case .number(let firstNumber) = calculationHistory[0] else { return 0 }
+
         var currentResult = firstNumber
         for index in stride(from: 1, to: calculationHistory.count - 1, by: 2) {
-            guard case .operation(let operation ) = calculationHistory[index],
-                  case.number(let number) = calculationHistory[index + 1]
-            else {break}
-            
+            guard
+                case .operation(let operation ) = calculationHistory[index],
+                case.number(let number) = calculationHistory[index + 1]
+            else { break }
+
             currentResult = try operation.calculate(currentResult, number)
             noResults = false
         }
-        shoudClearDispley = true
+
+        shouldClearDisplay = true
+
         return currentResult
     }
     
