@@ -4,7 +4,6 @@
 //
 //  Created by Арсений Варицкий on 28.03.24.
 //
-
 import UIKit
 
 enum CalculationError: Error {
@@ -42,6 +41,7 @@ enum CalculatorHistoryItem {
 class ViewController: UIViewController {
     
     var noResults = true
+    var shoudClearDispley = false
     
     var calculationHistory: [CalculatorHistoryItem] = []
     
@@ -58,6 +58,11 @@ class ViewController: UIViewController {
     @IBAction func buttonPressed(_ sender: UIButton) {
         guard let buttonText = sender.titleLabel?.text else { return }
         
+        if shoudClearDispley {
+            resetLabelText()
+            shoudClearDispley = false
+        }
+        
         if label.text == "Ошибка" {resetLabelText()}
         
         if buttonText == "," && label.text?.contains(",") == true {return}
@@ -68,7 +73,6 @@ class ViewController: UIViewController {
             label.text?.append(buttonText)
         }
         
-        print(buttonText)
     }
     
     @IBAction func operationButtonPressed(_ sender: UIButton) {
@@ -87,7 +91,6 @@ class ViewController: UIViewController {
         calculationHistory.append(.operation(buttonOperation))
         resetLabelText()
         
-        print(buttonText)
     }
         
     lazy var numberFormatter: NumberFormatter = {
@@ -153,7 +156,7 @@ class ViewController: UIViewController {
             currentResult = try operation.calculate(currentResult, number)
             noResults = false
         }
-        
+        shoudClearDispley = true
         return currentResult
     }
     
