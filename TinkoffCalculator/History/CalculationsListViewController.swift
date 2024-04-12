@@ -79,7 +79,6 @@ extension CalculationsListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let dateFormater = DateFormatter()
         dateFormater.dateFormat = "dd.MM.yyyy"
-//        let currentDate = Date()
         let historyItemDate = calculations[section].date
         let dateString = dateFormater.string(from: historyItemDate)
         return dateString
@@ -93,7 +92,7 @@ extension CalculationsListViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryTableViewCell", for: indexPath) as! HistoryTableViewCell
         
         
-        let historyItem = calculations[indexPath.row]
+        let historyItem = calculations[indexPath.section]
         
         cell.configure(with: expressionToString(historyItem.expression), result: String(historyItem.result))
         
