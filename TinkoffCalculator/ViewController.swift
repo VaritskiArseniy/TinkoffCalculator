@@ -44,8 +44,10 @@ class ViewController: UIViewController {
     var shouldClearDisplay = false
 
     var noResults = true
-    var calculations: [(expression: [CalculatorHistoryItem], result: Double)] = []
+    var calculations: [Calculation] = []
     var calculationHistory: [CalculatorHistoryItem] = []
+    
+    var calculationHistoryStorage = CalculationHistoryStorage()
     
     @IBOutlet weak var label: UILabel!
     
@@ -55,6 +57,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         resetLabelText()
         historyButton.accessibilityIdentifier = "historyButton"
+        
+        calculations = calculationHistoryStorage.loadHistory()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -79,7 +83,6 @@ class ViewController: UIViewController {
         } else {
             label.text?.append(buttonText)
         }
-        
     }
     
     @IBAction func operationButtonPressed(_ sender: UIButton) {
@@ -123,7 +126,10 @@ class ViewController: UIViewController {
         do {
             let result = try calculate()
             label.text = numberFormatter.string(from: NSNumber(value: result))
-            calculations.append((calculationHistory, result))
+            let date = Date()
+            let newCalculation = Calculation(expression: calculationHistory, result: result, date: date)
+            calculations.append(newCalculation)
+            calculationHistoryStorage.setHistory(calculation: calculations)
         }
         catch {
             label.text = "Ошибка"

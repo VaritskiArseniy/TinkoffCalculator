@@ -11,7 +11,7 @@ import UIKit
 class CalculationsListViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
-    var calculations: [(expression: [CalculatorHistoryItem], result: Double)] = []
+    var calculations: [Calculation] = []
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -30,7 +30,7 @@ class CalculationsListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         tableView.dataSource = self
         tableView.delegate = self
         
@@ -71,18 +71,22 @@ extension CalculationsListViewController: UITableViewDelegate {
 }
 
 extension CalculationsListViewController: UITableViewDataSource {
+        
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return calculations.count
+    }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy"
-
-        let currentDate = Date()
-        let dateString = dateFormatter.string(from: currentDate)
+        let dateFormater = DateFormatter()
+        dateFormater.dateFormat = "dd.MM.yyyy"
+//        let currentDate = Date()
+        let historyItemDate = calculations[section].date
+        let dateString = dateFormater.string(from: historyItemDate)
         return dateString
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return calculations.count
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
